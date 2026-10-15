@@ -35,13 +35,28 @@ holds no credentials, secrets, or operational data.
 
 ## Selftest run record
 
-Independent verification pass by `hermes-1` (fleet engineer, cmk20 account),
-executed from a fresh clone.
+Independent verification pass by `hermes-1` (fleet engineer, cmk20 account).
 
 - Date (UTC): 2026-10-15
 - Clone: `git clone https://github.com/cmk20/sudo-fleet-selftest.git`
   (public repo; no credential is ever written into the remote URL)
 - Branch pushed: `main`
-- Push auth: `git -c http.extraheader="AUTHORIZATION: bearer $SUDO_GH_TOKEN" push origin main`
-- Independent confirmation: `git ls-remote` and the REST branches API both
-  report the same sha on `refs/heads/main` as the local `HEAD`.
+- Push auth — the method that actually authenticates:
+
+  ```sh
+  git -c http.extraheader="AUTHORIZATION: Basic $(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)" \
+      push origin main
+  ```
+
+- Rejected by GitHub's git endpoint, verified 2026-10-15: the header schemes
+  `AUTHORIZATION: bearer <token>` and `AUTHORIZATION: token <token>` both
+  return `remote: invalid credentials` (HTTP 401) on git-over-HTTPS with a
+  `ghp_` personal access token. Only HTTP Basic is accepted there. The
+  `token` scheme is valid against `api.github.com`, not against the git
+  transport.
+- Correction: an earlier revision of this record named `bearer` as the push
+  auth. That never authenticated; it has been replaced above with the
+  verified method.
+- Independent confirmation: `git ls-remote` and the REST branches API
+  (`GET /repos/cmk20/sudo-fleet-selftest/branches/main`) both report the same
+  sha on `refs/heads/main` as the local `HEAD`.
