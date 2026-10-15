@@ -32,3 +32,16 @@ git ls-remote https://github.com/cmk20/sudo-fleet-selftest.git main
 
 Generated as a one-shot provisioning check. It is a public repository and
 holds no credentials, secrets, or operational data.
+
+## Selftest run record
+
+Independent verification pass by `hermes-1` (fleet engineer, cmk20 account),
+executed from a fresh clone.
+
+- Date (UTC): 2026-10-15
+- Clone: `git clone https://github.com/cmk20/sudo-fleet-selftest.git`
+  (public repo; no credential is ever written into the remote URL)
+- Branch pushed: `main`
+- Push auth: `git -c http.extraheader="AUTHORIZATION: bearer $SUDO_GH_TOKEN" push origin main`
+- Independent confirmation: `git ls-remote` and the REST branches API both
+  report the same sha on `refs/heads/main` as the local `HEAD`.
